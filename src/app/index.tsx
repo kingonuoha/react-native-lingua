@@ -1,4 +1,5 @@
-import { Text, View } from "react-native";
+import { Link } from "expo-router";
+import { Text, TouchableOpacity, View } from "react-native";
 
 export default function Index() {
   return (
@@ -10,6 +11,11 @@ export default function Index() {
         Learn languages with playful lessons, friendly reminders, and a clear
         design system.
       </Text>
+      <Link href="/onboarding" asChild>
+        <TouchableOpacity className="mt-8 bg-lingua-primary px-6 py-3 rounded-lg">
+          <Text className="font-poppins-bold text-white">Open Onboarding</Text>
+        </TouchableOpacity>
+      </Link>
     </View>
   );
 }
