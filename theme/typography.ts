@@ -1,0 +1,18 @@
+export const fontSize = {
+  "lingua-h1": ["32px", { lineHeight: "38px" }],
+  h1: ["32px", { lineHeight: "38px" }],
+  "lingua-h2": ["24px", { lineHeight: "31px" }],
+  h2: ["24px", { lineHeight: "31px" }],
+  "lingua-h3": ["20px", { lineHeight: "26px" }],
+  h3: ["20px", { lineHeight: "26px" }],
+  "lingua-h4": ["16px", { lineHeight: "22px" }],
+  h4: ["16px", { lineHeight: "22px" }],
+  "lingua-body-lg": ["16px", { lineHeight: "26px" }],
+  "body-lg": ["16px", { lineHeight: "26px" }],
+  "lingua-body-md": ["14px", { lineHeight: "22px" }],
+  "body-md": ["14px", { lineHeight: "22px" }],
+  "lingua-body-sm": ["13px", { lineHeight: "21px" }],
+  "body-sm": ["13px", { lineHeight: "21px" }],
+  "lingua-caption": ["11px", { lineHeight: "15px" }],
+  caption: ["11px", { lineHeight: "15px" }],
+};

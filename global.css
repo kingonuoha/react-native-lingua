@@ -1,0 +1,221 @@
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css";
+
+@import "nativewind/theme";
+
+@layer base {
+  :root {
+    color-scheme: light;
+    /* Lingua design tokens (CSS variables) */
+    --lingua-primary: #6c4ef5;
+    --lingua-primary-deep: #5b3bf6;
+    --lingua-primary-blue: #4d8bff;
+    --lingua-green: #21c16b;
+    --lingua-warning: #ffc800;
+    --lingua-streak: #ff8a00;
+    --lingua-error: #ff4d4f;
+    --lingua-info: #4d8bff;
+    --lingua-text-primary: #0d132b;
+    --lingua-text-secondary: #6b7280;
+    --lingua-border: #e5e7eb;
+    --lingua-surface: #f6f7fb;
+    --lingua-background: #ffffff;
+  }
+
+  body {
+    background-color: var(--lingua-background);
+    color: var(--lingua-text-primary);
+  }
+}
+
+@layer utilities {
+  /* Shadows */
+  .shadow-soft {
+    shadow-color: rgba(13, 19, 43, 0.08);
+    shadow-offset: 0px 20px;
+    shadow-opacity: 1;
+    shadow-radius: 40px;
+    elevation: 10;
+  }
+
+  .shadow-card {
+    shadow-color: rgba(13, 19, 43, 0.08);
+    shadow-offset: 0px 10px;
+    shadow-opacity: 1;
+    shadow-radius: 30px;
+    elevation: 8;
+  }
+
+  /* Neutral helpers */
+  .text-muted,
+  .text-lingua-muted {
+    color: var(--lingua-text-secondary);
+  }
+
+  .bg-surface-light,
+  .bg-lingua-surface {
+    background-color: var(--lingua-surface);
+  }
+
+  .bg-lingua-background {
+    background-color: var(--lingua-background);
+  }
+
+  .border-lingua {
+    border-color: var(--lingua-border);
+  }
+
+  /* Color utilities (text, background, border) */
+  .text-lingua-primary {
+    color: var(--lingua-primary);
+  }
+  .bg-lingua-primary {
+    background-color: var(--lingua-primary);
+  }
+  .border-lingua-primary {
+    border-color: var(--lingua-primary);
+  }
+
+  .text-lingua-primary-deep {
+    color: var(--lingua-primary-deep);
+  }
+  .bg-lingua-primary-deep {
+    background-color: var(--lingua-primary-deep);
+  }
+
+  .text-lingua-primary-blue {
+    color: var(--lingua-primary-blue);
+  }
+  .bg-lingua-primary-blue {
+    background-color: var(--lingua-primary-blue);
+  }
+
+  .text-lingua-green {
+    color: var(--lingua-green);
+  }
+  .bg-lingua-green {
+    background-color: var(--lingua-green);
+  }
+
+  .text-lingua-success {
+    color: var(--lingua-green);
+  }
+  .bg-lingua-success {
+    background-color: var(--lingua-green);
+  }
+
+  .text-lingua-warning {
+    color: var(--lingua-warning);
+  }
+  .bg-lingua-warning {
+    background-color: var(--lingua-warning);
+  }
+
+  .text-lingua-streak {
+    color: var(--lingua-streak);
+  }
+  .bg-lingua-streak {
+    background-color: var(--lingua-streak);
+  }
+
+  .text-lingua-error {
+    color: var(--lingua-error);
+  }
+  .bg-lingua-error {
+    background-color: var(--lingua-error);
+  }
+
+  .text-lingua-info {
+    color: var(--lingua-info);
+  }
+  .bg-lingua-info {
+    background-color: var(--lingua-info);
+  }
+
+  .text-lingua-text-primary {
+    color: var(--lingua-text-primary);
+  }
+  .text-lingua-text-secondary {
+    color: var(--lingua-text-secondary);
+  }
+
+  /* Typography utilities (sizes + leading) */
+  .text-lingua-h1,
+  .h1 {
+    font-size: 32px;
+    line-height: 38px;
+  }
+
+  /* Simple text-only H1 helper (shortcut class `.h1`). */
+  h1.lingua {
+    font-size: 32px;
+    line-height: 38px;
+    font-weight: 700;
+    color: var(--lingua-text-primary);
+  }
+
+  .text-lingua-h2,
+  .h2 {
+    font-size: 24px;
+    line-height: 31px;
+  }
+
+  .text-lingua-h3,
+  .h3 {
+    font-size: 20px;
+    line-height: 26px;
+  }
+
+  .text-lingua-h4,
+  .h4 {
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  .text-lingua-body-lg,
+  .body-lg {
+    font-size: 16px;
+    line-height: 26px;
+  }
+
+  .text-lingua-body-md,
+  .body-md {
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .text-lingua-body-sm,
+  .body-sm {
+    font-size: 13px;
+    line-height: 21px;
+  }
+
+  .text-lingua-caption,
+  .caption {
+    font-size: 11px;
+    line-height: 15px;
+  }
+
+  /* Font family helpers (use the expo-font registered names) */
+  .font-poppins {
+    font-family: "Poppins-Regular";
+  }
+  .font-poppins-medium {
+    font-family: "Poppins-Medium";
+  }
+  .font-poppins-semibold {
+    font-family: "Poppins-SemiBold";
+  }
+  .font-poppins-bold {
+    font-family: "Poppins-Bold";
+  }
+
+  /* Card / radius helpers */
+  .rounded-card {
+    border-radius: 12px;
+  }
+  .rounded-pill {
+    border-radius: 9999px;
+  }
+}
