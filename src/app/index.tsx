@@ -12,8 +12,8 @@ export default function Index() {
         design system.
       </Text>
       <Link href="/onboarding" asChild>
-        <TouchableOpacity className="mt-8 bg-lingua-primary px-6 py-3 rounded-lg">
-          <Text className="font-poppins-bold text-white">Open Onboarding</Text>
+        <TouchableOpacity className="mt-8 bg-lingua-primary py-3 px-6 rounded-lg">
+          <Text className="text-white font-poppins-bold text-base">Open Onboarding</Text>
         </TouchableOpacity>
       </Link>
     </View>
