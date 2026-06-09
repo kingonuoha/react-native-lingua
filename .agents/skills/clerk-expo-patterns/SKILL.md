@@ -162,7 +162,7 @@ export function OrgSwitcher() {
 
 - `clerk-setup` - Initial Clerk install
 - `clerk-custom-ui` - Custom flows & appearance
-- `clerk-orgs` - B2B organizations
+- `clerk-webhooks` - Real-time event sync
 
 ## Docs
 

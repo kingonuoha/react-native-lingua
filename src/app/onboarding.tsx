@@ -1,8 +1,9 @@
 import { useAuth, useClerk, useUser } from "@clerk/expo";
 import { Link, Stack, useRouter } from "expo-router";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { usePostHog } from "posthog-react-native";
 import { images } from "../../constants/images";
 
 export default function Onboarding() {
@@ -10,16 +11,36 @@ export default function Onboarding() {
   const { isSignedIn, isLoaded } = useAuth();
   const { user } = useUser();
   const { signOut } = useClerk();
+  const posthog = usePostHog();
+  const isSignedInRef = useRef(isSignedIn);
+
+  useEffect(() => {
+    posthog.capture("onboarding_viewed", { is_signed_in: isSignedInRef.current ?? false });
+  }, [posthog]);
 
   async function handleSignOut() {
     try {
+      posthog.capture("user_signed_out");
+      posthog.reset();
       await signOut();
       // after sign out, navigate to onboarding root
       router.replace("/onboarding");
     } catch (err) {
+      posthog.captureException(err instanceof Error ? err : new Error(String(err)));
       console.warn("Sign out failed:", err);
     }
   }
+  if (!isLoaded) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
+        <Stack.Screen options={{ headerShown: false }} />
+        <View className="flex-1 items-center justify-center">
+          <Text className="font-poppins text-lingua-text-secondary">Loading...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
       <Stack.Screen options={{ headerShown: false }} />

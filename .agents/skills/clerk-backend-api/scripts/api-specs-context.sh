@@ -23,6 +23,13 @@ versions=$(curl -s "$API_URL" | node -e "
 
 latest=$(echo "$versions" | tail -1)
 
+# Validate that we got versions back before proceeding
+if [ -z "$versions" ] || [ -z "$latest" ]; then
+  echo "[ERROR] Failed to fetch API spec versions from $API_URL" >&2
+  echo "[ERROR] Response may have been empty or unexpected. Check RAW_BASE=$RAW_BASE" >&2
+  exit 1
+fi
+
 echo "AVAILABLE VERSIONS: $(echo "$versions" | tr '\n' ' ')"
 echo "LATEST VERSION: $latest"
 echo ""

@@ -1,0 +1,57 @@
+[
+  {
+    "event": "onboarding_viewed",
+    "description": "User lands on the onboarding/welcome screen — top of the signup conversion funnel",
+    "file": "src/app/onboarding.tsx"
+  },
+  {
+    "event": "sign_in_code_sent",
+    "description": "User requests an email sign-in code on the sign-in screen",
+    "file": "src/app/sign-in.tsx"
+  },
+  {
+    "event": "google_oauth_started",
+    "description": "User taps Continue with Google on the sign-in screen",
+    "file": "src/app/sign-in.tsx"
+  },
+  {
+    "event": "user_signed_in",
+    "description": "User successfully completes sign-in (email code verified)",
+    "file": "src/app/sign-in.tsx"
+  },
+  {
+    "event": "sign_up_submitted",
+    "description": "User submits email/password to create an account",
+    "file": "src/app/sign-up.tsx"
+  },
+  {
+    "event": "google_oauth_started",
+    "description": "User taps Continue with Google on the sign-up screen",
+    "file": "src/app/sign-up.tsx"
+  },
+  {
+    "event": "user_signed_up",
+    "description": "User successfully completes account creation after email verification",
+    "file": "src/app/sign-up.tsx"
+  },
+  {
+    "event": "user_signed_out",
+    "description": "User signs out from the onboarding screen",
+    "file": "src/app/onboarding.tsx"
+  },
+  {
+    "event": "language_confirmed",
+    "description": "User confirms their selected learning language",
+    "file": "src/app/languages.tsx"
+  },
+  {
+    "event": "continue_learning_pressed",
+    "description": "User taps Continue on the home screen to resume their current lesson",
+    "file": "src/app/(tabs)/home.tsx"
+  },
+  {
+    "event": "ai_video_call_started",
+    "description": "User taps the video call button on the home screen to start an AI conversation",
+    "file": "src/app/(tabs)/home.tsx"
+  }
+]

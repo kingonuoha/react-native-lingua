@@ -1,19 +1,33 @@
 import { useState } from "react";
-import { View, Text, FlatList, Image, TouchableOpacity, TextInput } from "react-native";
+import { View, Text, FlatList, Image, TouchableOpacity, TextInput, StyleSheet } from "react-native";
 import { useRouter, Stack } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { usePostHog } from "posthog-react-native";
 import { languages } from "@/../data/languages";
 import { images } from "@/../constants/images";
+import { useLanguageStore } from "@/../store/languageStore";
 import LanguageCard from "@/components/LanguageCard";
 import { Feather } from "@expo/vector-icons";
+import { colors } from "@/../constants/colors";
 
 export default function LanguageSelectionScreen() {
   const router = useRouter();
-  const [selectedLanguage, setSelectedLanguage] = useState(languages[0].code);
+  const posthog = usePostHog();
+  const storeLanguage = useLanguageStore((state) => state.selectedLanguage);
+  const setSelectedLanguage = useLanguageStore(
+    (state) => state.setSelectedLanguage
+  );
+  const [localSelected, setLocalSelected] = useState(
+    storeLanguage ?? languages[0].code
+  );
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleConfirm = () => {
-    // TODO: Save selected language to Zustand store
+    posthog.capture("language_confirmed", {
+      language_code: localSelected,
+      previous_language: storeLanguage ?? null,
+    });
+    setSelectedLanguage(localSelected);
     router.replace("/");
   };
 
@@ -27,31 +41,31 @@ export default function LanguageSelectionScreen() {
       <View className="flex-1">
         {/* Search Bar */}
         <View className="px-6 mb-6 mt-4">
-          <View className="flex-row items-center bg-white border-2 border-[#E5E7EB] rounded-full px-4 py-3">
-            <Feather name="search" size={20} color="#9CA3AF" />
+          <View className="flex-row items-center bg-white border-2 border-lingua rounded-full px-4 py-3">
+            <Feather name="search" size={20} color={colors.muted} />
             <TextInput
               placeholder="Search languages"
-              className="flex-1 ml-3 font-poppins text-base text-lingua-text-primary"
-              placeholderTextColor="#9CA3AF"
+              style={styles.searchInput}
+              placeholderTextColor={colors.muted}
               value={searchQuery}
               onChangeText={setSearchQuery}
             />
           </View>
         </View>
 
-        {/* 1. FlatList (bottom layer in z-index) */}
+        {/* 1. Language List */}
         <View className="flex-1 px-6">
           <FlatList
             data={filteredLanguages}
             keyExtractor={(item) => item.code}
             ListHeaderComponent={() => (
-              <Text className="text-lg font-poppins-bold mb-4">Popular</Text>
+              <Text className="text-lg font-poppins-bold mb-4">All Languages</Text>
             )}
             renderItem={({ item }) => (
               <LanguageCard
                 language={item}
-                isSelected={selectedLanguage === item.code}
-                onPress={() => setSelectedLanguage(item.code)}
+                isSelected={localSelected === item.code}
+                onPress={() => setLocalSelected(item.code)}
               />
             )}
             contentContainerStyle={{ paddingBottom: 20 }}
@@ -63,9 +77,9 @@ export default function LanguageSelectionScreen() {
         <View className="px-6 py-2">
           <TouchableOpacity
             onPress={handleConfirm}
-            className="bg-lingua-primary rounded-2xl py-4 items-center border-b-4 border-[#7C3AED]"
+            style={styles.confirmButton}
           >
-            <Text className="font-poppins-bold text-white text-lg">Confirm</Text>
+            <Text style={styles.confirmButtonText}>Confirm</Text>
           </TouchableOpacity>
         </View>
 
@@ -81,3 +95,26 @@ export default function LanguageSelectionScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  searchInput: {
+    flex: 1,
+    marginLeft: 12,
+    fontFamily: "Poppins-Regular",
+    fontSize: 16,
+    color: "#0d132b",
+  },
+  confirmButton: {
+    backgroundColor: "#6c4ef5",
+    borderRadius: 16,
+    paddingVertical: 16,
+    alignItems: "center",
+    borderBottomWidth: 4,
+    borderBottomColor: "#5b3bf6",
+  },
+  confirmButtonText: {
+    fontFamily: "Poppins-Bold",
+    color: "#ffffff",
+    fontSize: 18,
+  },
+});
