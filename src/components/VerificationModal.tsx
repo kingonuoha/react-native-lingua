@@ -31,7 +31,7 @@ export default function VerificationModal({
   onVerify,
 }: Props) {
   const [code, setCode] = useState<string[]>(["", "", "", "", "", ""]);
-  const inputs = useRef<Array<TextInput | null>>([]);
+  const inputs = useRef<(TextInput | null)[]>([]);
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isVerifying, setIsVerifying] = useState(false);

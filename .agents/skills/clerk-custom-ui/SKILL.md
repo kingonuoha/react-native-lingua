@@ -171,5 +171,3 @@ Also import shadcn CSS in your global styles:
 ## See Also
 
 - `clerk-setup` - Initial Clerk install
-- `clerk-nextjs-patterns` - Next.js patterns
-- `clerk-orgs` - B2B organizations

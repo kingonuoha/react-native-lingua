@@ -16,13 +16,13 @@ Before ANY POST / PATCH / PUT / DELETE, you MUST do ALL of the following in your
 
 1. **Check CLERK_SECRET_KEY** — verify it is set:
    ```bash
-   echo $CLERK_SECRET_KEY | head -c 10
+   echo "$CLERK_SECRET_KEY" | head -c 10
    ```
    If empty, stop and ask the user. Do not proceed without a valid key.
 
 2. **Check CLERK_BAPI_SCOPES** — run:
    ```bash
-   echo $CLERK_BAPI_SCOPES
+   echo "$CLERK_BAPI_SCOPES"
    ```
    Inspect the output. If scopes are missing or do not include the required write permission, tell the user: *"This is a write operation and your current scopes may not allow it. Rerun with --admin to bypass?"* Do NOT attempt the request and fail — ask first.
 

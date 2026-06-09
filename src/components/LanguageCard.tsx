@@ -1,6 +1,7 @@
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
 import type { Language } from "@/../types/learning";
 import { Feather } from "@expo/vector-icons";
+import { colors } from "@/../constants/colors";
 
 interface Props {
   language: Language;
@@ -16,11 +17,10 @@ export default function LanguageCard({ language, onPress, isSelected }: Props) {
   return (
     <TouchableOpacity
       onPress={onPress}
-      className={`flex-row items-center p-4 mb-3 rounded-2xl border-2 ${
-        isSelected
-          ? "border-lingua-primary bg-[#F4F4FF]"
-          : "border-transparent bg-white shadow-sm"
-      }`}
+      style={[
+        styles.container,
+        isSelected ? styles.selectedContainer : styles.defaultContainer,
+      ]}
     >
       <Image
         source={{ uri: language.flagUrl }}
@@ -40,8 +40,32 @@ export default function LanguageCard({ language, onPress, isSelected }: Props) {
           <Feather name="check" size={14} color="white" />
         </View>
       ) : (
-        <Feather name="chevron-right" size={20} color="#9CA3AF" />
+        <Feather name="chevron-right" size={20} color={colors.muted} />
       )}
     </TouchableOpacity>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 16,
+    marginBottom: 12,
+    borderRadius: 16,
+    borderWidth: 2,
+  },
+  selectedContainer: {
+    borderColor: "#6c4ef5",
+    backgroundColor: "#f4f4ff",
+  },
+  defaultContainer: {
+    borderColor: "transparent",
+    backgroundColor: "#ffffff",
+    shadowColor: "rgba(13, 19, 43, 0.08)",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 1,
+    shadowRadius: 30,
+    elevation: 8,
+  },
+});

@@ -10,6 +10,7 @@
     /* Lingua design tokens (CSS variables) */
     --lingua-primary: #6c4ef5;
     --lingua-primary-deep: #5b3bf6;
+    --lingua-primary-light: #f4f4ff;
     --lingua-primary-blue: #4d8bff;
     --lingua-green: #21c16b;
     --lingua-warning: #ffc800;
@@ -18,6 +19,7 @@
     --lingua-info: #4d8bff;
     --lingua-text-primary: #0d132b;
     --lingua-text-secondary: #6b7280;
+    --lingua-muted: #9ca3af;
     --lingua-border: #e5e7eb;
     --lingua-surface: #f6f7fb;
     --lingua-background: #ffffff;
@@ -48,8 +50,7 @@
   }
 
   /* Neutral helpers */
-  .text-muted,
-  .text-lingua-muted {
+  .text-muted {
     color: var(--lingua-text-secondary);
   }
 
@@ -82,6 +83,17 @@
   }
   .bg-lingua-primary-deep {
     background-color: var(--lingua-primary-deep);
+  }
+
+  .text-lingua-primary-light {
+    color: var(--lingua-primary-light);
+  }
+  .bg-lingua-primary-light {
+    background-color: var(--lingua-primary-light);
+  }
+
+  .text-lingua-muted {
+    color: var(--lingua-muted);
   }
 
   .text-lingua-primary-blue {

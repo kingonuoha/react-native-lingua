@@ -1,8 +1,10 @@
 import { useSignIn } from "@clerk/expo";
-import * as WebBrowser from "expo-web-browser";
+import { FontAwesome } from "@expo/vector-icons";
 import { makeRedirectUri } from "expo-auth-session";
 import { Link, Stack, useRouter } from "expo-router";
-import React, { useState } from "react";
+import * as WebBrowser from "expo-web-browser";
+import { useState } from "react";
+import { usePostHog } from "posthog-react-native";
 import {
   ActivityIndicator,
   Image,
@@ -16,7 +18,6 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { images } from "../../constants/images";
 import FormError from "../components/FormError";
 import VerificationModal from "../components/VerificationModal";
@@ -24,6 +25,7 @@ import VerificationModal from "../components/VerificationModal";
 export default function SignIn() {
   const router = useRouter();
   const { signIn } = useSignIn();
+  const posthog = usePostHog();
   const [email, setEmail] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [signInError, setSignInError] = useState<string | null>(null);
@@ -36,6 +38,7 @@ export default function SignIn() {
     setSignInError(null);
     setSignInSuggestions(null);
     setOauthLoading(true);
+    posthog.capture("google_oauth_started", { screen: "sign_in" });
     try {
       if (!signIn) {
         setSignInError("Sign-in not initialized yet. Please wait.");
@@ -61,9 +64,7 @@ export default function SignIn() {
       await WebBrowser.openBrowserAsync(authUrl.toString());
     } catch (err: any) {
       const friendly =
-        err?.errors?.[0]?.longMessage ||
-        err?.message ||
-        "OAuth failed.";
+        err?.errors?.[0]?.longMessage || err?.message || "OAuth failed.";
       console.warn("[OAuth SignIn] Exception:", friendly, err);
       setSignInError(friendly);
     } finally {
@@ -135,7 +136,7 @@ export default function SignIn() {
                       if (signIn?.create) {
                         const res: any = await signIn.create({
                           identifier: email,
-                          strategy: "email_code",
+                          strategy: "email_code" as any,
                         });
                         if (res?.error) {
                           const err = res.error as any;
@@ -168,9 +169,10 @@ export default function SignIn() {
                         friendly,
                       );
                       return;
-                    } finally {
-                      setModalVisible(true);
                     }
+
+                    posthog.capture("sign_in_code_sent", { email });
+                    setModalVisible(true);
                   }}
                 >
                   <Text className="font-poppins-bold text-white">
@@ -228,12 +230,20 @@ export default function SignIn() {
         onRequestClose={() => setModalVisible(false)}
         onVerify={async (code) => {
           try {
-            const { error } = await signIn.emailCode.verifyCode({ code });
+            if (!signIn) {
+              const msg = "Sign-in not initialized. Please try again.";
+              setSignInError(msg);
+              return { success: false, message: msg };
+            }
+            const { error } = await (signIn as any).emailCode.verifyCode({
+              code,
+            });
 
             if (error) {
+              const e: any = error;
               const msg =
-                error.errors?.[0]?.longMessage ||
-                error.message ||
+                e.errors?.[0]?.longMessage ||
+                e.message ||
                 "Verification failed.";
               setSignInError(msg);
               return { success: false, message: msg };
@@ -241,12 +251,18 @@ export default function SignIn() {
 
             if (signIn.status === "complete") {
               await signIn.finalize();
+              posthog.identify(email, {
+                $set: { email },
+                $set_once: { first_sign_in_date: new Date().toISOString() },
+              });
+              posthog.capture("user_signed_in", { method: "email_code" });
               router.push("/");
               return true;
             }
 
             return { success: false, message: "Sign-in not complete." };
           } catch (err: any) {
+            posthog.captureException(err instanceof Error ? err : new Error(String(err)));
             const friendly =
               err?.errors?.[0]?.longMessage ||
               err?.message ||

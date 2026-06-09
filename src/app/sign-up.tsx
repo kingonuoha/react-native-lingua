@@ -1,12 +1,14 @@
 import { useSignUp, useSignIn } from "@clerk/expo";
 import * as WebBrowser from "expo-web-browser";
 import { makeRedirectUri } from "expo-auth-session";
-import { Link, Stack, useRouter } from "expo-router";
+import { type Href, Link, Stack, useRouter } from "expo-router";
 import React, { useState } from "react";
+import { usePostHog } from "posthog-react-native";
 import {
   ActivityIndicator,
   Image,
   KeyboardAvoidingView,
+  Linking,
   Platform,
   ScrollView,
   StyleSheet,
@@ -16,16 +18,32 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { images } from "../../constants/images";
 import FormError from "../components/FormError";
 import VerificationModal from "../components/VerificationModal";
+
+function parseClerkError(error: unknown): { message: string; suggestions: string[] | null } {
+  const clerkErr = error as {
+    errors?: { longMessage?: string; message?: string; meta?: { zxcvbn?: { suggestions?: { message?: string }[] } } }[];
+    message?: string;
+  };
+  const message =
+    clerkErr?.errors?.[0]?.longMessage ||
+    clerkErr?.message ||
+    "An error occurred.";
+  const z = clerkErr?.errors?.[0]?.meta?.zxcvbn?.suggestions;
+  const suggestions = Array.isArray(z)
+    ? z.map((s) => s?.message || String(s)).filter(Boolean)
+    : null;
+  return { message, suggestions };
+}
 
 export default function SignUp() {
   const router = useRouter();
   const { signUp } = useSignUp();
   const { signIn } = useSignIn();
+  const posthog = usePostHog();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -41,6 +59,7 @@ export default function SignUp() {
     setSignUpError(null);
     setSignUpSuggestions(null);
     setOauthLoading(true);
+    posthog.capture("google_oauth_started", { screen: "sign_up" });
     try {
       if (!signIn) {
         setSignUpError("Sign-in not initialized yet. Please wait.");
@@ -160,41 +179,28 @@ export default function SignUp() {
                   onPress={async () => {
                     setSignUpError(null);
                     setSignUpSuggestions(null);
+                    posthog.capture("sign_up_submitted", { method: "email_password" });
                     try {
-                      const res: any = await signUp.password({
+                      const res = await signUp.password({
                         emailAddress: email,
                         password,
                       });
 
                       if (res?.error) {
-                        const err = res.error as any;
-                        const msg =
-                          err?.errors?.[0]?.longMessage ||
-                          err?.message ||
-                          "Failed to create account.";
-                        const z = err?.errors?.[0]?.meta?.zxcvbn?.suggestions;
-                        const suggestions = Array.isArray(z)
-                          ? z.map((s: any) => s?.message || String(s))
-                          : null;
-                        setSignUpError(msg);
+                        const { message, suggestions } = parseClerkError(res.error);
+                        setSignUpError(message);
                         setSignUpSuggestions(suggestions);
                         return;
                       }
 
                       await signUp.verifications.sendEmailCode();
                       setModalVisible(true);
-                    } catch (err: any) {
-                      const friendly =
-                        err?.errors?.[0]?.longMessage ||
-                        err?.message ||
-                        "Sign up failed. Please try again.";
-                      const z = err?.errors?.[0]?.meta?.zxcvbn?.suggestions;
-                      const suggestions = Array.isArray(z)
-                        ? z.map((s: any) => s?.message || String(s))
-                        : null;
-                      setSignUpError(friendly);
+                    } catch (err) {
+                      posthog.captureException(err instanceof Error ? err : new Error(String(err)));
+                      const { message, suggestions } = parseClerkError(err);
+                      setSignUpError(message);
                       setSignUpSuggestions(suggestions);
-                      console.warn("Sign up error:", friendly);
+                      console.warn("Sign up error:", message);
                     }
                   }}
                 >
@@ -261,21 +267,23 @@ export default function SignUp() {
             await signUp.verifications.verifyEmailCode({ code });
 
             if (signUp.status === "complete") {
+              posthog.identify(email, {
+                $set: { email },
+                $set_once: { first_sign_up_date: new Date().toISOString() },
+              });
+              posthog.capture("user_signed_up", { method: "email_password" });
               await signUp.finalize({
-                navigate: ({ session, decorateUrl }: any) => {
+                navigate: ({ session, decorateUrl }) => {
                   if (session?.currentTask) {
                     console.log(session?.currentTask);
-                    return {
-                      success: false,
-                      message: "Session task pending.",
-                    } as any;
+                    return;
                   }
 
                   const url = decorateUrl("/");
                   if (url.startsWith("http")) {
-                    window.location.href = url;
+                    Linking.openURL(url);
                   } else {
-                    router.push(url as any);
+                    router.push(url as Href);
                   }
                 },
               });
@@ -287,6 +295,7 @@ export default function SignUp() {
               return { success: false, message: msg };
             }
           } catch (err: any) {
+            posthog.captureException(err instanceof Error ? err : new Error(String(err)));
             const friendly =
               err?.errors?.[0]?.longMessage ||
               err?.message ||

@@ -4,7 +4,7 @@ Study the existing auth screens and current mocked auth flow, then replace the m
 
 Keep the existing UI and navigation flow intact. Implement email-based Sign Up, Sign In, social auth where supported, and verification code handling through Clerk. 
 
-After successful verification/authentication, navigate to the home route (/). If not authenticated, show onboarding route (/onboarding(. If authenticated, show home route (/). 
+After successful verification/authentication, navigate to the home route (/). If not authenticated, show onboarding route (/onboarding). If authenticated, show home route (/). 
 
 Do not change the screen design. If there is any need, ask me before implementation
 
@@ -466,16 +466,16 @@ This approach uses custom flows built with React Native components and **works i
 
              // If no session tasks, navigate the signed-in user to the home page
              const url = decorateUrl('/')
-             if (url.startsWith('http')) {
-               window.location.href = url
-             } else {
-               router.push(url as Href)
-             }
-           },
-         })
-       } else {
-         // Check why the sign-up is not complete
-         console.error('Sign-up attempt not complete:', signUp)
+              if (url.startsWith('http')) {
+                router.push(url as Href)
+              } else {
+                router.push(url as Href)
+              }
+            },
+          })
+        } else {
+          // Check why the sign-up is not complete
+          console.error('Sign-up attempt not complete:', signUp)
        }
      }
 
@@ -694,7 +694,7 @@ This approach uses custom flows built with React Native components and **works i
               // If no session tasks, navigate the signed-in user to the home page
               const url = decorateUrl('/')
               if (url.startsWith('http')) {
-                window.location.href = url
+                router.push(url as Href)
               } else {
                 router.push(url as Href)
               }
@@ -734,7 +734,7 @@ This approach uses custom flows built with React Native components and **works i
               // If no session tasks, navigate the signed-in user to the home page
               const url = decorateUrl('/')
               if (url.startsWith('http')) {
-                window.location.href = url
+                router.push(url as Href)
               } else {
                 router.push(url as Href)
               }
