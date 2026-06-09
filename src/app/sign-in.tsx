@@ -136,7 +136,7 @@ export default function SignIn() {
                       if (signIn?.create) {
                         const res: any = await signIn.create({
                           identifier: email,
-                          strategy: "email_code" as any,
+                          strategy: "email_code" as const,
                         });
                         if (res?.error) {
                           const err = res.error as any;
@@ -171,7 +171,7 @@ export default function SignIn() {
                       return;
                     }
 
-                    posthog.capture("sign_in_code_sent", { email });
+                    posthog.capture("sign_in_code_sent");
                     setModalVisible(true);
                   }}
                 >
@@ -235,9 +235,9 @@ export default function SignIn() {
               setSignInError(msg);
               return { success: false, message: msg };
             }
-            const { error } = await (signIn as any).emailCode.verifyCode({
+            const { error } = (await signIn.emailCode?.verifyCode({
               code,
-            });
+            })) ?? {};
 
             if (error) {
               const e: any = error;
@@ -251,8 +251,7 @@ export default function SignIn() {
 
             if (signIn.status === "complete") {
               await signIn.finalize();
-              posthog.identify(email, {
-                $set: { email },
+              posthog.identify(signIn.id ?? "anonymous", {
                 $set_once: { first_sign_in_date: new Date().toISOString() },
               });
               posthog.capture("user_signed_in", { method: "email_code" });

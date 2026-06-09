@@ -42,21 +42,15 @@ export default function HomeScreen() {
   );
 
   const currentLesson = languageLessons[0];
-  const currentLessonIndex = currentLesson
-    ? lessonOrder.indexOf(currentLesson.id)
-    : 0;
-  const lessonCount = lessonOrder.length;
-  const progressPercent = lessonCount
-    ? Math.round(((currentLessonIndex + 1) / lessonCount) * 100)
-    : 0;
+
+  function hasProfileImage(u: unknown): u is { profileImageUrl?: string } {
+    return u != null && typeof u === "object" && "profileImageUrl" in u;
+  }
 
   const greeting = user?.firstName ? `Hola, ${user.firstName}! 👋` : "Hola! 👋";
-  const activeEmail =
-    user?.primaryEmailAddress?.emailAddress || user?.id || "Guest";
   const avatarUrl = user
-    ? (user.imageUrl ?? (user as any).profileImageUrl)
+    ? (user.imageUrl ?? (hasProfileImage(user) ? user.profileImageUrl : undefined))
     : undefined;
-  const todayGoals = currentLesson?.goals.slice(0, 3) ?? [];
   const dailyXpTarget = 20;
   const dailyXp = Math.min(currentLesson?.xpReward ?? 15, dailyXpTarget);
   const dailyXpProgress = Math.round((dailyXp / dailyXpTarget) * 100);

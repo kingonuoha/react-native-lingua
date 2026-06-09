@@ -1,16 +1,15 @@
 import { Text, TouchableOpacity, useWindowDimensions, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 
-type TabBarProps = any;
+type TabBarProps = BottomTabBarProps;
 
-const ICONS = [
-  "home-outline",
-  "book-open-variant",
-  "robot",
-  "chat-outline",
-  "account-circle-outline",
-];
-const LABELS = ["Home", "Learn", "AI Teacher", "Chat", "Profile"];
+const ROUTE_CONFIG: Record<string, { icon: string; label: string }> = {
+  home: { icon: "home-outline", label: "Home" },
+  courses: { icon: "book-open-variant", label: "Learn" },
+  lessons: { icon: "robot", label: "AI Teacher" },
+  profile: { icon: "account-circle-outline", label: "Profile" },
+};
 
 export default function CustomTabBar({ state, navigation }: TabBarProps) {
   const { width } = useWindowDimensions();
@@ -20,8 +19,12 @@ export default function CustomTabBar({ state, navigation }: TabBarProps) {
   return (
     <View className="bg-white border-t border-gray-200 py-3">
       <View style={{ flexDirection: "row" }}>
-        {state.routes.map((route: any, idx: number) => {
+        {state.routes.map((route, idx: number) => {
           const focused = state.index === idx;
+          const config = ROUTE_CONFIG[route.name] ?? {
+            icon: "help-circle-outline",
+            label: route.name,
+          };
           return (
             <TouchableOpacity
               key={route.key}
@@ -34,7 +37,7 @@ export default function CustomTabBar({ state, navigation }: TabBarProps) {
               }}
             >
               <MaterialCommunityIcons
-                name={ICONS[idx] as any}
+                name={config.icon}
                 size={24}
                 color={focused ? "#6c4ef5" : "#6b7280"}
               />
@@ -46,7 +49,7 @@ export default function CustomTabBar({ state, navigation }: TabBarProps) {
                   fontFamily: "Poppins-Regular",
                 }}
               >
-                {LABELS[idx]}
+                {config.label}
               </Text>
             </TouchableOpacity>
           );
